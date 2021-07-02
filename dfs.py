@@ -732,3 +732,12 @@ class Solution:
                     return
         dfs(0, 0, 0)
         return res
+
+### 390. 消除游戏
+## 编号映射 + 递归
+## https://leetcode-cn.com/problems/elimination-game/solution/mei-ri-suan-fa-day-85-tu-jie-suan-fa-yi-xing-dai-m/
+class Solution:
+    def lastRemaining(self, n: int) -> int:
+        if n == 1:
+            return 1
+        return 2 * (n // 2 + 1 - self.lastRemaining(n//2))

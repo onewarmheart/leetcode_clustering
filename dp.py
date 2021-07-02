@@ -59,3 +59,71 @@ class Solution:
                 dp[i][j] = max(nums[i] - dp[i + 1][j], nums[j] - dp[i][j - 1])
         return dp[0][length - 1] >= 0
 ## dfs
+# dfs仍然表示作为先手比对方多拿的分，不指代某个人
+# 整个过程其实是模拟博弈过程
+# 时间O(2^n) 空间O(n) 递归栈开销
+class Solution:
+    def PredictTheWinner(self, nums: List[int]) -> bool:
+        def dfs(nums, l, r):
+            if l > r:
+                return 0
+            choose_left = nums[l] - dfs(nums, l+1, r)
+            choose_right = nums[r] - dfs(nums, l, r-1)
+            return max(choose_left, choose_right)
+        return dfs(nums, 0, len(nums) - 1) >= 0
+
+### 375. 猜数字大小 II
+## 英文题干：Given a particular n,
+#  return the minimum amount of money you need to guarantee a win regardless of what number I pick.
+# 采用最差的策略，也能至少赢一次的代价
+
+## dfs, 超时
+# dfs(l,r)表示我们能求得从l开始猜到r，猜到答案的最小代价
+import sys
+class Solution:
+    def getMoneyAmount(self, n: int) -> int:
+        def dfs(l, r):
+            if l >= r:
+                return 0
+            mn = sys.maxsize
+            for i in range(l, r+1):
+                cost = i + max(dfs(l, i-1), dfs(i+1, r))
+                mn = min(mn, cost)
+            return mn
+        return dfs(1, n)
+## 记忆化搜索, 勉强能过
+import sys
+class Solution:
+    def getMoneyAmount(self, n: int) -> int:
+        # python可以元组作为key，其实也可以用二阶n x n矩阵
+        memo = {}
+        def dfs(l, r):
+            if l >= r:
+                return 0
+            if (l, r) in memo:
+                return memo[(l,r)]
+            mn = sys.maxsize
+            for i in range(l, r+1):
+                cost = i + max(dfs(l, i-1), dfs(i+1, r))
+                mn = min(mn, cost)
+            memo[(l,r)] = mn
+            return mn
+        return dfs(1, n)
+## dp
+public class Solution {
+    public int getMoneyAmount(int n) {
+        int[][] dp = new int[n + 1][n + 1];
+        for (int len = 2; len <= n; len++) {
+            for (int start = 1; start <= n - len + 1; start++) {
+                int minres = Integer.MAX_VALUE;
+                for (int piv = start; piv < start + len - 1; piv++) {
+                    int res = piv + Math.max(dp[start][piv - 1], dp[piv + 1][start + len - 1]);
+                    minres = Math.min(res, minres);
+                }
+                dp[start][start + len - 1] = minres;
+            }
+        }
+        return dp[1][n];
+    }
+}
+
