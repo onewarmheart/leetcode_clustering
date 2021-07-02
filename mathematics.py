@@ -15,3 +15,13 @@ class Solution:
 class Solution:
     def canWinNim(self, n: int) -> bool:
         return n%4!=0
+        
+### 319. 灯泡开关
+# 只有因数的个数是奇数的时候才会被打开，
+# 每个数，即使是质数也有1和本身两个因数，只有完全平凡数会是奇数个因数
+# n里有多少个完全平方数？开个根号向下取整，比它小的就是了
+import math
+class Solution:
+    def bulbSwitch(self, n: int) -> int:
+        return int(math.sqrt(n))
+
