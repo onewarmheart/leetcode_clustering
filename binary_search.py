@@ -107,3 +107,14 @@ class Solution:
             elif flag == 1:
                 l = mid + 1
         return l
+
+### 二分搜索总结
+## https://www.cnblogs.com/grandyang/p/6854825.html
+
+
+
+
+
+
+
+

@@ -305,7 +305,9 @@ class Solution:
 
 
 ### 127. 单词接龙
-## bfs, 层数自增，遇到答案即返回
+## bfs
+# 层数自增，遇到答案即返回
+# 遇到在wordList的词，就从中删除，避免处理重复单词
 from collections import deque
 class Solution:
     def ladderLength(self, beginWord: str, endWord: str, wordList: List[str]) -> int:
@@ -319,11 +321,12 @@ class Solution:
                 tmp_str = q.popleft()
                 if tmp_str == endWord: return res + 1
                 for i in range(len(tmp_str)):
+                    cp_tmp_str = tmp_str 
                     for ch in alphabet:
-                        cp_tmp_str = tmp_str 
                         cp_tmp_str = tmp_str[:i] + ch + tmp_str[i+1:]
                         if cp_tmp_str in wordSet and cp_tmp_str != tmp_str:
                             q.append(cp_tmp_str)
                             wordSet.remove(cp_tmp_str)
             res += 1
         return 0
+

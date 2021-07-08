@@ -126,4 +126,21 @@ public class Solution {
         return dp[1][n];
     }
 }
+### 最长不重复子数组
 
+### 718. 最长重复子数组
+## 二维dp
+class Solution:
+    def findLength(self, nums1: List[int], nums2: List[int]) -> int:
+        m = len(nums1)
+        n = len(nums2)
+        dp = [[0 for j in range(n)] for i in range(m)]
+        res = 0
+        for i in range(m):
+            for j in range(n):
+                tmp = 0 if i < 1 or j < 1 else dp[i-1][j-1]
+                if nums1[i] == nums2[j]:
+                    dp[i][j] = tmp + 1
+                res = max(res, dp[i][j])
+        return res
+## 

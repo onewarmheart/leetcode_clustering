@@ -25,3 +25,19 @@ class Solution:
     def bulbSwitch(self, n: int) -> int:
         return int(math.sqrt(n))
 
+### 50. Pow(x, n)
+### 递归 快速幂
+class Solution:
+    def myPow(self, x: float, n: int) -> float:
+        def dfs(x, n):
+            if n == 0: return 1
+            tmp = dfs(x, n >> 1)
+            return tmp*tmp*x if n & 1 else tmp*tmp
+        return 1/dfs(x, -n) if n < 0 else dfs(x, n)
+
+
+### 2的幂
+
+### 3的幂
+
+### 4的幂
