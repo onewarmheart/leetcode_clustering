@@ -39,5 +39,16 @@ class Solution:
 ### 2的幂
 
 ### 3的幂
-
+## 暴力法
+## 注意n是整数，取值范围应该是[1,∞)
+class Solution:
+    def isPowerOfThree(self, n: int) -> bool:
+        if n <= 0: return False
+        resi = 0
+        while n > 1:
+            t = n // 3
+            resi = n % 3
+            if resi: return False
+            n = t
+        return True
 ### 4的幂

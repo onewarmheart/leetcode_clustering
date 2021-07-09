@@ -143,4 +143,11 @@ class Solution:
                     dp[i][j] = tmp + 1
                 res = max(res, dp[i][j])
         return res
-## 
+
+### 滑动窗口
+
+## 二分查找 + 哈希
+### 难度比较大
+
+
+
