@@ -150,4 +150,68 @@ class Solution:
 ### 难度比较大
 
 
+### 334. 递增的三元子序列
+## 三指针法O(n^3)
+## 优化版暴力 O(n^2)
+class Solution:
+    def increasingTriplet(self, nums: List[int]) -> bool:
+        n = len(nums)
+        for i in range(n):
+            left_min = False
+            for j in range(i):
+                if nums[j] < nums[i]:
+                    left_min = True
+                    break
+            right_max = False
+            for k in range(i+1, n):
+                if nums[k] > nums[i]:
+                    right_max = True
+                    break
+            if left_min and right_max:
+                return True
+        return False
+## 记忆数组O(n), 在暴力法基础上优化
+class Solution:
+    def increasingTriplet(self, nums: List[int]) -> bool:
+        n = len(nums)
+        left = [nums[0]]*n
+        right = [nums[-1]]*n
+        for i in range(n):
+            if i >= 1: 
+                left[i] = min(left[i-1], nums[i])
+        for j in range(n-1, -1, -1):
+            if j < n-1: 
+                right[j] = max(right[j+1], nums[j])
+        for k in range(n):
+            if left[k] < nums[k] and right[k] > nums[k]:
+                return True
+        return False
+## dp
+# dp[i] 表示 < 第i个数的的个数，初始化的时候包括了本身
+class Solution:
+    def increasingTriplet(self, nums: List[int]) -> bool:
+        n = len(nums)
+        dp = [1] * n
+        for i in range(n):
+            for j in range(i):
+                if nums[j] < nums[i]:
+                    dp[i] = max(dp[j]+1, dp[i])
+                if dp[i] >= 3:
+                    return True
+        return False
 
+
+## 贪心算法
+class Solution:
+    def increasingTriplet(self, nums: List[int]) -> bool:
+        n = len(nums)
+        mn = 2147483648 + 1
+        mid = 2147483648 + 1
+        for i in range(n):
+            if nums[i] < mn:
+                mn = nums[i]
+            elif nums[i] > mn and nums[i] < mid:
+                mid = nums[i]
+            elif nums[i] > mid:
+                return True
+        return False

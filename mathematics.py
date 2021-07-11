@@ -37,6 +37,15 @@ class Solution:
 
 
 ### 2的幂
+## 二进制中只有一位为1，具体做的时候找最后一个1
+## 抹去最后一个1看是否为0
+class Solution:
+    def isPowerOfTwo(self, n: int) -> bool:
+        return n > 0 and (n & (n-1)) == 0
+## 通过负数，即补码（反码+1），仅保留最后一个1，看是否和原数相等
+class Solution:
+    def isPowerOfTwo(self, n: int) -> bool:
+        return n > 0 and (n & -n) == n
 
 ### 3的幂
 ## 暴力法
@@ -51,4 +60,14 @@ class Solution:
             if resi: return False
             n = t
         return True
+## 某质数的幂的除数，只能是质数的幂（更低阶）
+class Solution:
+    def isPowerOfThree(self, n: int) -> bool:
+        return n > 0 and 1162261467 % n == 0
+
 ### 4的幂
+class Solution:
+    def isPowerOfFour(self, n: int) -> bool:
+        return n > 0 and (n & (n-1) == 0) and (n & 0xaaaaaaaa  == 0)
+
+
