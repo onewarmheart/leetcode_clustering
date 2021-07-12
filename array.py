@@ -472,3 +472,24 @@ class Solution:
             i+=1
         return num
 
+### 350. 两个数组的交集 II
+## 方法1: 哈希表 O(m+n)
+## 方法2: 排序过以后, 用双指针O(min(n,m))
+class Solution:
+    def intersect(self, nums1: List[int], nums2: List[int]) -> List[int]:
+        nums1.sort()
+        nums2.sort()
+        n = len(nums1)
+        m = len(nums2)
+        i = 0; j = 0
+        res = []
+        while i < n and j < m:
+            if nums1[i] == nums2[j]:
+                res.append(nums1[i])
+                i+=1; j+=1
+            elif nums1[i] < nums2[j]:
+                i+=1
+            elif nums1[i] > nums2[j]:
+                j+=1
+        return res
+## 方法3: 如果较大数组的元素存储在磁盘上，内存是有限的，并且你不能一次加载所有的元素到内存中，应该采用方法1，因为可以并行分块读

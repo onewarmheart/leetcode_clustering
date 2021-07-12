@@ -743,3 +743,77 @@ class Solution:
         if n == 1:
             return 1
         return 2 * (n // 2 + 1 - self.lastRemaining(n//2))
+
+
+### 365. 水壶问题
+## dfs, 递归实现 （递归层数可能超过python允许最大层数，届时使用栈来实现）
+# 状态定义和终止条件、visit记录 很重要
+class Solution:
+    def canMeasureWater(self, x: int, y: int, z: int) -> bool:
+        if x + y < z:
+            return False
+        visited = set()
+        def dfs(resi_x, resi_y):
+            if resi_x == z or resi_y == z or (resi_x + resi_y == z):
+                return True
+            if (resi_x, resi_y) in visited:
+                return False
+            visited.add((resi_x, resi_y))
+            # 装满x
+            if dfs(x, resi_y):
+                return True
+            # 装满y
+            if dfs(resi_x, y):
+                return True
+            # 倒空x
+            if dfs(0, resi_y):
+                return True
+            # 倒空y
+            if dfs(resi_x, 0):
+                return True
+            # 从x向y直到倒空或倒满
+            if dfs(resi_x - min(resi_x, y-resi_y), resi_y + min(resi_x, y-resi_y)):
+                return True
+            if dfs(resi_x + min(x-resi_x, resi_y), resi_y - min(x-resi_x, resi_y)):
+                return True
+            return False
+        return dfs(0, 0)
+## dfs, 栈实现
+# 作者：LeetCode-Solution
+# 链接：https://leetcode-cn.com/problems/water-and-jug-problem/solution/shui-hu-wen-ti-by-leetcode-solution/
+class Solution:
+    def canMeasureWater(self, x: int, y: int, z: int) -> bool:
+        if x + y < z:
+            return False
+        stk = [[0,0]]
+        visited = set()
+        while stk:
+            resi_x, resi_y = stk.pop()
+            if (resi_x, resi_y) in visited:
+                continue
+            if resi_x == z or resi_y == z or (resi_x + resi_y == z):
+                return True
+            visited.add((resi_x, resi_y))
+            # 装满x
+            stk.append([x, resi_y])
+            # 装满y 
+            stk.append([resi_x, y])
+            # 倒空x
+            stk.append([0, resi_y])
+            # 倒空y
+            stk.append([resi_x, 0])
+            # 从x向y直到倒空或倒满
+            stk.append([resi_x - min(resi_x, y-resi_y), resi_y + min(resi_x, y-resi_y)])
+            # 从y向x直到倒空或倒满
+            stk.append([resi_x + min(x-resi_x, resi_y), resi_y - min(x-resi_x, resi_y)])
+        return False
+
+## 最大公约数
+class Solution:
+    def canMeasureWater(self, x: int, y: int, z: int) -> bool:
+        if x + y < z:
+            return False
+        if x == 0 or y == 0:
+            return z == 0 or x + y == z
+        return z % math.gcd(x, y) == 0
+
