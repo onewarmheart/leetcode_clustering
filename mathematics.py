@@ -73,3 +73,45 @@ class Solution:
 ### 最大公约数
 ## TODO
 
+
+### 372. 超级次方
+## 递归+防止溢出
+class Solution:
+    def __init__(self):
+        self.base = 1337
+
+    def myPow(self, x, n):
+        res = 1
+        x %= self.base
+        for i in range(n, 0, -1):
+            res *= x
+            res %= self.base
+        return res
+
+    def superPow(self, a: int, b: List[int]) -> int:
+        if not b:
+            return 1
+        last = b.pop()
+        first = self.myPow(a, last)
+        second = self.myPow(self.superPow(a, b), 10)
+        return (first * second) % self.base
+
+## 递归+防止溢出+快速幂
+class Solution:
+    def __init__(self):
+        self.base = 1337
+
+    def myPow(self, x, n):
+        if n == 0:
+            return 1
+        x %= self.base
+        tmp = self.myPow(x, n//2)
+        return (tmp*tmp*x)%self.base if n&1 else tmp*tmp%self.base    
+
+    def superPow(self, a: int, b: List[int]) -> int:
+        if not b:
+            return 1
+        last = b.pop()
+        first = self.myPow(a, last)
+        second = self.myPow(self.superPow(a, b), 10)
+        return (first * second) % self.base
