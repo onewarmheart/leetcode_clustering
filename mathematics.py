@@ -115,3 +115,6 @@ class Solution:
         first = self.myPow(a, last)
         second = self.myPow(self.superPow(a, b), 10)
         return (first * second) % self.base
+
+### 400. 第 N 位数字
+# https://www.cnblogs.com/grandyang/p/5891871.html

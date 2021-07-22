@@ -199,3 +199,27 @@ class Solution:
             i+=1
             j-=1
         return ''.join(s)
+
+### 395. 至少有 K 个重复字符的最长子串
+## 频次统计+二进制mask+跳过无效遍历
+class Solution:
+    def longestSubstring(self, s: str, k: int) -> int:
+        i = 0
+        n = len(s)
+        res = 0
+        while i + k <= n:
+            counter = [0] * 26; mask = 0; max_idx = i
+            for j in range(i, n):
+                t = ord(s[j]) - ord('a')
+                counter[t] += 1
+                if counter[t] < k:
+                    mask |= (1 << t)
+                else:
+                    mask &= (~(1 << t))
+                if mask == 0:
+                    res = max(res, j - i + 1)
+                    max_idx = j
+            i = max_idx + 1
+        return res
+## 枚举+双指针
+# https://leetcode-cn.com/problems/longest-substring-with-at-least-k-repeating-characters/solution/xiang-jie-mei-ju-shuang-zhi-zhen-jie-fa-50ri1/

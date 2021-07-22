@@ -182,8 +182,8 @@ class Solution:
             visited[i][j] = 1
 
             flag = False
-            locations = ((0, 1),(0, -1),(1, 0),(-1,0))
-            for p, q in (locations):
+            directions = ((0, 1),(0, -1),(1, 0),(-1,0))
+            for p, q in (directions):
                 x, y = i+p, j+q
                 if x >= m or y >= n or x < 0 or y < 0:
                     continue

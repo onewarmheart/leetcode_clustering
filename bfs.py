@@ -9,9 +9,6 @@
 #         self.right = right
 
 ## 类似bfs + 两个栈 
-from typing import Deque
-
-
 class Solution:
     def zigzagLevelOrder(self, root: TreeNode) -> List[List[int]]:
         s1 = [root]

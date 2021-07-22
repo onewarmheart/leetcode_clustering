@@ -493,3 +493,14 @@ class Solution:
                 j+=1
         return res
 ## 方法3: 如果较大数组的元素存储在磁盘上，内存是有限的，并且你不能一次加载所有的元素到内存中，应该采用方法1，因为可以并行分块读
+
+
+### 386. 字典序排数
+class Solution:
+    def lexicalOrder(self, n: int) -> List[int]:
+        l = [str(i) for i in range(1,n+1)]
+        l.sort()
+        l = [int(i) for i in l]
+        return l
+
+
