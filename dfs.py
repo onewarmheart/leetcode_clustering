@@ -299,6 +299,10 @@ class Solution:
 
 #%%
 ### 301. 删除无效的括号
+## dfs
+# 评论区python版 https://leetcode-cn.com/problems/remove-invalid-parentheses/solution/shan-chu-wu-xiao-de-gua-hao-by-leetcode/
+# 根据括号匹配规则和根据求解 22. 括号生成 的经验，我们知道：如果当前遍历到的左括号的数目严格小于右括号的数目则表达式无效（这一点非常重要）。
+# rightCount, leftCount只是用来确认以上这点
 class Solution:
     def removeInvalidParentheses(self, s: str) -> List[str]:
         leftRemove, rightRemove = 0, 0
@@ -317,13 +321,13 @@ class Solution:
                 if not leftRemove and not rightRemove:
                     res.add(strs)
                 return
-            # 添加字符
+            # 不添加字符
             if s[idx] == '(' and leftRemove:
                 dfs(idx+1, leftCount, rightCount, leftRemove-1, rightRemove, strs)
             if s[idx] == ')' and rightRemove:
                 dfs(idx+1, leftCount, rightCount, leftRemove, rightRemove-1, strs)
                 
-            # 不添加字符
+            # 添加字符
             if s[idx] not in '()':
                 dfs(idx+1, leftCount, rightCount, leftRemove, rightRemove, strs+s[idx])
             elif s[idx] == '(':

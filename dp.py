@@ -79,6 +79,7 @@ class Solution:
 
 ## dfs, 超时
 # dfs(l,r)表示我们能求得从l开始猜到r，猜到答案的最小代价
+from abc import ABCMeta
 import sys
 class Solution:
     def getMoneyAmount(self, n: int) -> int:
@@ -215,3 +216,148 @@ class Solution:
             elif nums[i] > mid:
                 return True
         return False
+
+##########背包问题集合
+### 322. 零钱兑换
+## leetcode上背包问题总结
+## https://leetcode-cn.com/problems/coin-change/solution/yi-pian-wen-zhang-chi-tou-bei-bao-wen-ti-sq9n/
+## 本题属于完全背包问题（每个），且每个元素可以重复选择
+
+## 一维dp
+# dp表示拼成（正好拼成）目标金额，至少需要的硬币数（恰装满背包目标承重，最少需要的物品数量）
+class Solution:
+    def coinChange(self, coins: List[int], amount: int) -> int:
+        dp = [sys.maxsize] * (amount+1)
+        dp[0] = 0
+        for i in range(1, amount+1):
+            for c in coins:
+                if i - c >= 0:
+                    dp[i] = min(dp[i], dp[i-c] + 1)
+        return dp[amount] if dp[amount] < sys.maxsize else -1
+
+### 518. 零钱兑换 II
+## 二维dp
+# 注意边界条件，且遍历不要覆盖边界条件
+class Solution:
+    def change(self, amount: int, coins: List[int]) -> int:
+        n = len(coins)
+        dp = [[0 for _a in range(amount+1)] for _b in range(n+1)]
+        for i in range(1, n + 1):
+            dp[i][0] = 1
+            for j in range(1, amount +1):
+                if i >= 1 and j - coins[i-1] >= 0:
+                    dp[i][j] = dp[i][j - coins[i-1]] + dp[i-1][j]
+                else:
+                    dp[i][j] = dp[i-1][j]
+        return dp[n][amount]
+
+## 二维dp，压缩空间
+class Solution:
+    def change(self, amount: int, coins: List[int]) -> int:
+        n = len(coins)
+        dp = [0] * (amount+1)
+        dp[0] = 1
+        for i in range(1, n + 1):
+            for j in range(1, amount +1):
+                if i >= 1 and j - coins[i-1] >= 0:
+                    dp[j] = dp[j] + dp[j - coins[i-1]]
+                else:
+                    dp[j] = dp[j]
+        return dp[amount]
+### 416. 分割等和子集
+## 还是先写二维，状态压缩不用着急
+'''
+dp[i][j] = dp[i-1][j] || dp[i-1][j-nums[i]]
+'''
+##根据状态转移判断压缩空间的时候，内层应该倒序
+class Solution:
+    def canPartition(self, nums: List[int]) -> bool:
+        n = len(nums)
+        sumation = sum(nums)
+        if sumation & 1 != 0:
+            return False
+        target = sumation // 2
+        dp = [False] * (target+1)
+        dp[0] =True
+        for i in range(1, n+1):
+            for j in range(target, 0, -1):
+                if j - nums[i-1] >= 0:
+                    dp[j] = dp[j] or dp[j-nums[i-1]]
+        return dp[target]
+### 698. 划分为k个相等的子集
+
+## dfs, 排序剪枝 （不这样做会慢很多）
+# 注意找出一个满足条件的组合以后，start也要归零，visit数组
+class Solution:
+    def canPartitionKSubsets(self, nums: List[int], k: int) -> bool:
+        n = len(nums)
+        sumation = sum(nums)
+        if sumation % k != 0:
+            return False
+        visited = [0] * n
+        target = sumation // k
+        nums.sort(reverse=True)
+        def dfs(start, out, k):
+            if k == 1:
+                return True
+            if out > target:
+                return False
+            if out == target:
+                return dfs(0, 0, k-1)
+            for i in range(start, n):
+                if visited[i]:
+                    continue
+                visited[i] = 1
+                flag = dfs(i+1, out + nums[i], k)
+                if flag: return flag
+                visited[i] = 0
+            return False
+        return dfs(0, 0, k)
+
+### 279. 完全平方数
+class Solution {
+public:
+    int numSquares(int n) {
+        vector<int> dp(n+1,INT_MAX);
+        dp[0] = 0;
+        for(int i = 1; i <= n; i++){
+            for(int j = 1; i - j*j >= 0; j++){
+                dp[i] = min(dp[i], dp[i-j*j] + 1);
+            }
+        }
+        return dp[n];
+    }
+};
+
+##########股票买卖问题集合
+## https://labuladong.gitbook.io/algo/mu-lu-ye/tuan-mie-gu-piao-wen-ti 
+## 按这篇文章的思路，不难
+## 注意：1.边界条件 2.优化空间的方式
+
+
+##########子串子序列问题集合
+
+
+### 337. 打家劫舍 III
+class Solution:
+    def rob(self, root: TreeNode) -> int:
+        def _rob(root):
+            if not root: return 0, 0
+            
+            ls, ln = _rob(root.left)
+            rs, rn = _rob(root.right)
+            
+            return root.val + ln + rn, max(ls, ln) + max(rs, rn)
+
+        return max(_rob(root))
+
+
+
+
+########## 最大矩形、最大正方形集合
+### 85. 最大矩形
+## 单调栈  TODO
+## 暴力，三层遍历，有点类似最大正方形
+
+### 84. 柱状图中最大的矩形
+

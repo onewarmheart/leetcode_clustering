@@ -84,6 +84,8 @@ class Solution:
         return self.reversePrint(head.next) + [head.val]
 
 ### 剑指 Offer 07. 重建二叉树
+### 105. 从前序与中序遍历序列构造二叉树
+# 以下pre_idx改为root_idx_in_pre比较好理解
 # Definition for a binary tree node.
 # class TreeNode:
 #     def __init__(self, x):
@@ -616,3 +618,618 @@ class Solution:
             res.append(list(out))
             n+=1
         return res
+
+### 剑指 Offer 42. 连续子数组的最大和
+## 先想清楚用序列型还是坐标型，以及如何获取答案；然后找子问题和状态转移规律
+class Solution:
+    def maxSubArray(self, nums: List[int]) -> int:
+        n = len(nums)
+        if n == 0:
+            return 0
+        dp = [0] * n
+        res = dp[0] = nums[0]
+        for i in range(1, n):
+            if dp[i-1] < 0:
+                dp[i] = nums[i]
+            else:
+                dp[i] = dp[i-1] + nums[i]
+            res = max(dp[i], res)
+        return res
+
+### 剑指 Offer 39. 数组中出现次数超过一半的数字
+## 摩尔投票法，可以通过想哈希表法怎么缩减空间开销想出来
+class Solution:
+    def majorityElement(self, nums: List[int]) -> int:
+        vote = 0
+        candi = 0
+        for num in nums:
+            if vote == 0:
+                candi = num
+                vote += 1
+                continue
+            vote += 1 if num == candi else -1
+        return candi
+
+## 以上摩尔投票法，简单理解
+# https://leetcode-cn.com/problems/shu-zu-zhong-chu-xian-ci-shu-chao-guo-yi-ban-de-shu-zi-lcof/solution/mian-shi-ti-39-shu-zu-zhong-chu-xian-ci-shu-chao-3/
+class Solution:
+    def majorityElement(self, nums: List[int]) -> int:
+        votes = 0
+        for num in nums: #每一个人都要出来挑战
+            if votes == 0: #擂台上没人 选一个出来当擂主 x就是擂主  votes就是人数
+                x = num
+            votes += 1 if num == x else -1 #如果是自己人就站着呗 如果不是 就同归于尽
+        return x
+### 以上同 169. 多数元素
+## partition应该也可以实现时间复杂度为 O(n)、空间复杂度为 O(1) 
+
+
+### 剑指 Offer 33. 二叉搜索树的后序遍历序列
+## 分治；递归（子问题）
+# 后序遍历根节点是最后一个
+# 边界问题，举例子就能准确解答
+class Solution:
+    def verifyPostorder(self, postorder: List[int]) -> bool:
+        def dfs(i, j):
+            # if i >= j - 1:
+            if i >= j:
+                return True
+            p = i
+            while postorder[p] < postorder[j]: p+=1
+            q = p
+            while postorder[q] > postorder[j]: q+=1
+            return q == j and dfs(i, p-1) and dfs(p, q-1)
+        return dfs(0, len(postorder) - 1)
+## 单调栈解法 TODO 
+
+### 剑指 Offer 34. 二叉树中和为某一值的路径
+# python中的list作为参数，是会传址的，所以要.copy()
+# 路径是从根到叶子，看题目的要求
+class Solution:
+    def pathSum(self, root: TreeNode, target: int) -> List[List[int]]:
+        res = []
+        if not root:
+            return res
+        def dfs(root, out, sumation):
+            if not root:
+                return 
+            out.append(root.val)
+            sumation+=root.val
+            if sumation == target and not root.left and not root.right:
+                res.append(out.copy())
+            dfs(root.left, out, sumation)
+            dfs(root.right, out, sumation)
+            out.pop()
+            return
+        dfs(root, [], 0)
+        return res
+
+
+### 剑指 Offer 36. 二叉搜索树与双向链表
+
+## 中序遍历
+# head和pre是全局变量，设置成类内成员变量self.xx也可以
+class Solution:
+    def treeToDoublyList(self, root: 'Node') -> 'Node':
+        pre = None
+        head = None
+        def dfs(root):
+            nonlocal head
+            nonlocal pre
+            if not root:
+                return
+            dfs(root.left)
+            if not pre:
+                head = root
+            else:
+                root.left = pre
+                pre.right = root
+            pre=root
+            dfs(root.right)
+            return
+        if not root: return None
+        dfs(root)
+        head.left, pre.right = pre, head
+        return head
+
+## 后序遍历，连接左右子（双项）链表
+# 自己的解法，不够简单；
+class Solution:
+    def treeToDoublyList(self, root: 'Node') -> 'Node':
+        def dfs(root):
+            if not root:
+                return None, None
+            lmn, lmx = dfs(root.left)
+            if lmx:
+                lmx.right = root
+                root.left = lmx
+            rmn, rmx = dfs(root.right)
+            if rmn:
+                root.right = rmn
+                rmn.left = root
+            if not lmn:
+                lmn = root
+            if not rmx:
+                rmx = root
+            return lmn, rmx
+        if not root: return None
+        a, b = dfs(root)
+        b.right = a
+        a.left =b
+        return a
+
+
+### 剑指 Offer 37. 序列化二叉树
+## 层次遍历序列化
+class Codec:
+
+    def serialize(self, root):
+        """Encodes a tree to a single string.
+        
+        :type root: TreeNode
+        :rtype: str
+        """
+        data = ""
+        if not root: return data
+        queue = collections.deque()
+        queue.append(root)
+        # print(root.val)
+        while queue:
+            node = queue.popleft()
+            # print(node.val)
+            if node:
+                data += (',' + str(node.val)) if data else str(node.val)
+                queue.append(node.left)
+                queue.append(node.right)
+            else:
+                data += ',' + 'null'
+        return data
+
+    def deserialize(self, data):
+        """Decodes your encoded data to tree.
+        
+        :type data: str
+        :rtype: TreeNode
+        """
+        if not data: 
+            return None
+        data = data.split(',')
+        n = len(data)
+        if n == 0:
+            return None
+        root = TreeNode(int(data[0]))
+        queue = collections.deque()
+        queue.append(root)
+        i = 1; j = 2
+        while queue:
+            node = queue.popleft()
+            left = right = None
+            if i < n and data[i] != 'null':
+                left = TreeNode(int(data[i]))
+                node.left = left
+                queue.append(left)
+            if j < n and data[j] != 'null':
+                right = TreeNode(int(data[j]))
+                node.right = right 
+                queue.append(right)
+            i += 2
+            j += 2
+        return root
+
+### 剑指 Offer 55 - I. 二叉树的深度
+class Solution:
+    def maxDepth(self, root: TreeNode) -> int:
+        if not root:
+            return 0
+        return max(self.maxDepth(root.left), self.maxDepth(root.right)) + 1
+
+### 剑指 Offer 55 - II. 平衡二叉树
+## 返回深度，顺便剪枝
+class Solution:
+    def isBalanced(self, root: TreeNode) -> bool:
+        res = True
+        def helper(root):
+            nonlocal res
+            if not root:
+                return 0
+            l = helper(root.left)
+            if l < 0:
+                return l 
+            r = helper(root.right) 
+            if r < 0:
+                return r
+            res = (res and abs(l - r) <= 1)
+            if not res:
+                return -1
+            return max(l, r) + 1
+        helper(root)
+        return res
+
+### 剑指 Offer 54. 二叉搜索树的第k大节点
+## 顺便剪枝
+class Solution:
+    def kthLargest(self, root: TreeNode, k: int) -> int:
+        res = 0
+        i = 0
+        def dfs(root):
+            nonlocal res, i
+            if not root:
+                return
+            dfs(root.right)
+            i += 1
+            if i > k:
+                return
+            if i == k:
+                res = root.val
+                return
+            dfs(root.left)
+            return
+        dfs(root)
+        return res
+
+### 剑指 Offer 68 - I. 二叉搜索树的最近公共祖先
+## 利用BST特性
+class Solution:
+    def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
+        if q.val < p.val:
+            q, p = p, q
+        while root:
+            if q.val < root.val:
+                root = root.left
+            elif p.val > root.val:
+                root = root.right
+            else:
+                break
+        return root
+## 一般方法，不利用BST的特性
+class Solution:
+    def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
+        res = None
+        def dfs(root):
+            nonlocal res
+            if not root:
+                return 0
+            cnt = 0
+            if root == p or root == q:
+                cnt += 1
+            l = dfs(root.left)
+            if l < 0:
+                return l
+            r = dfs(root.right)
+            if r < 0:
+                return r
+            if l == 1 and r == 1:
+                res = root
+                return -1
+            if cnt == 1 and l+r == 1:
+                res = root
+                return -1
+            return cnt + l + r
+        dfs(root)
+        return res
+
+### 剑指 Offer 68 - II. 二叉树的最近公共祖先
+## 一般方法，同上
+
+
+### 剑指 Offer 35. 复杂链表的复制
+"""
+# Definition for a Node.
+class Node:
+    def __init__(self, x: int, next: 'Node' = None, random: 'Node' = None):
+        self.val = int(x)
+        self.next = next
+        self.random = random
+"""
+class Solution:
+    def copyRandomList(self, head: 'Node') -> 'Node':
+        p = head
+        mp = {}
+        new_pre_head = Node(-1)
+        q = new_pre_head
+        while p:
+            node = Node(p.val)
+            q.next = node
+            mp[p] = node
+            p = p.next
+            q = q.next
+
+        p = head
+        q = new_pre_head.next
+        while p:
+            q.random = None if not p.random else mp[p.random]
+            p = p.next
+            q = q.next
+        return new_pre_head.next
+
+### 剑指 Offer 40. 最小的k个数
+## krahets的partition
+# 为什么要加k=size的单独处理的情况？因为这种方法下i不可能取到k
+# 如
+'''
+[0,0,2,3,2,1,1,2,0,4]
+10
+'''
+class Solution:
+    def getLeastNumbers(self, arr: List[int], k: int) -> List[int]:
+        if k >= len(arr): return arr
+        def quick_sort(l, r):
+            i, j = l, r
+            while i < j:
+                while i < j and arr[j] >= arr[l]:
+                    j -= 1
+                while i < j and arr[i] <= arr[l]:
+                    i += 1
+                arr[i], arr[j] = arr[j], arr[i]
+            arr[l], arr[i] = arr[i], arr[l]
+            if i < k:
+                return quick_sort(i+1, r)
+            elif i > k:
+                return quick_sort(l, i-1)
+            return arr[:k]
+        return quick_sort(0, len(arr) - 1)
+
+## krahets的快排
+# 不需要判断k是否等于size这种情况
+class Solution:
+    def getLeastNumbers(self, arr: List[int], k: int) -> List[int]:
+        # if k >= len(arr): return arr
+        def quick_sort(l, r):
+            i, j = l, r
+            if l >= r: return
+            while i < j:
+                while i < j and arr[j] >= arr[l]:
+                    j -= 1
+                while i < j and arr[i] <= arr[l]:
+                    i += 1
+                arr[i], arr[j] = arr[j], arr[i]
+            arr[l], arr[i] = arr[i], arr[l]
+            quick_sort(i+1, r)
+            quick_sort(l, i-1)
+            return
+        quick_sort(0, len(arr) - 1)
+        return arr[:k]
+
+## 剑指offer书上的解法
+class Solution:
+    def getLeastNumbers(self, arr: List[int], k: int) -> List[int]:
+        if k >= len(arr): return arr
+        if k == 0: return []
+        def partition(arr, start, end):
+            small = start - 1
+            mark = end
+            for i in range(start, mark):
+                if arr[i] < arr[mark]:
+                    small += 1
+                    arr[small], arr[i] = arr[i], arr[small]
+            small+=1
+            arr[small], arr[mark] = arr[mark], arr[small]
+            return small
+        
+        index = -1
+        l = 0; r = len(arr) - 1
+        k = k - 1
+        index = partition(arr, l, r)
+        while index != k:
+            if index < k:
+                l = index+1
+                index = partition(arr, l, r)
+            elif index > k:
+                r = index-1
+                index = partition(arr, l, r)
+            else:
+                break
+        return arr[:k+1]
+## 快速排序，用剑指offer版partition
+
+## 堆排序
+
+
+
+### 剑指 Offer 38. 字符串的排列
+class Solution:
+    def permutation(self, s: str) -> List[str]:
+        s = list(s)
+        n = len(s)
+        res = []
+        def dfs(start, out):
+            if start == n - 1:
+                res.append("".join(out.copy()))
+                return 
+            st = set()
+            for i in range(start, n):
+                if out[i] in st:
+                    continue
+                st.add(out[i])
+                out[i], out[start] = out[start], out[i]
+                dfs(start+1, out)
+                out[i], out[start] = out[start], out[i]
+            return
+        dfs(0, s)
+        return res
+
+### 剑指 Offer 45. 把数组排成最小的数
+## 自定义比较函数;注意python中的用法
+class Solution:
+    def minNumber(self, nums: List[int]) -> str:
+        def cmp(x, y):
+            s1, s2 = x+y, y+x
+            if s1 > s2:
+                return 1
+            elif s2 > s1:
+                return -1
+            return 0
+        nums = [str(num) for num in nums]
+        nums.sort(key=functools.cmp_to_key(cmp))
+        return "".join(nums)
+## 可以代入任意比较型排序，如快排
+
+
+
+### 剑指 Offer 44. 数字序列中某一位的数字
+class Solution:
+    def findNthDigit(self, n: int) -> int:
+        digit = 1
+        start = 1
+        while n - 9 * digit * start > 0:
+            n -= 9 * digit * start
+            digit += 1
+            start *= 10
+        num = start + ceil(n/digit) - 1
+        num = str(num)
+        return ord(num[(n % digit) - 1]) - ord('0')
+
+### 剑指 Offer 43. 1～n 整数中 1 出现的次数
+class Solution:
+    def countDigitOne(self, n: int) -> int:
+        res = 0
+        i = 1
+        while i <= n:
+            divider = i * 10
+            res += n // divider * i + min(max(n % divider - i + 1, 0), i)
+            i *= 10
+        return res
+## c++ grandyang
+class Solution {
+public:
+    int countDigitOne(int n) {
+        int res = 0, a = 1, b = 1;
+        while (n > 0) {
+            res += (n + 8) / 10 * a + (n % 10 == 1) * b;
+            b += n % 10 * a;
+            a *= 10;
+            n /= 10;
+        }
+        return res;
+    }
+};
+
+### 剑指 Offer 50. 第一个只出现一次的字符
+class Solution:
+    def firstUniqChar(self, s: str) -> str:
+        mp = collections.Counter()
+        res = " "
+        for c in s:
+            mp[c] += 1
+        for c in s:
+            if mp[c] == 1:
+                res = c
+                break
+        return res
+
+
+### 剑指 Offer 48. 最长不含重复字符的子字符串
+class Solution:
+    def lengthOfLongestSubstring(self, s: str) -> int:
+        res = 0
+        mp = {}
+        start = 0
+        for i, c in enumerate(s):
+            if c not in mp:
+                mp[c] = i
+            elif mp[c] >= start:
+                start = mp[c] + 1
+            mp[c] = i
+            res = max(res, i - start + 1)
+        return res
+
+### 剑指 Offer 56 - I. 数组中数字出现的次数
+class Solution:
+    def singleNumbers(self, nums: List[int]) -> List[int]:
+        nums1 = []
+        nums2 = []
+        res = nums[0]
+        n = len(nums)
+        for i in range(1, n):
+            res ^= nums[i]
+        def get_first_one(res):
+            tmp = 1
+            for i in range(n):
+                if res & (tmp):
+                    break
+                tmp <<= 1
+            return tmp
+        bound = get_first_one(res)
+        for num in nums:
+            if num & bound:
+                nums1.append(num)
+            else:
+                nums2.append(num)
+        res1 = nums1[0]
+        res2 = nums2[0]
+        for i in range(1, len(nums1)):
+            res1 ^= nums1[i]
+        for i in range(1, len(nums2)):
+            res2 ^= nums2[i]
+        return [res1, res2]
+
+
+### 剑指 Offer 56 - II. 数组中数字出现的次数 II
+class Solution:
+    def singleNumber(self, nums: List[int]) -> int:
+        array = []
+        idx = 1
+        n = len(nums)
+        mx = max(nums)
+        while idx <= mx:
+            tmp = 0
+            for i in range(n):
+                if nums[i] & idx:
+                    tmp += 1
+            array.append(tmp % 3)
+            idx <<= 1
+        # reverse(array)
+        res = 0
+        for i, a in enumerate(array):
+            res += a * pow(2, i)
+        return res
+
+### 剑指 Offer 66. 构建乘积数组
+class Solution:
+    def constructArr(self, a: List[int]) -> List[int]:
+        n = len(a)
+        res = [1] * n
+        tmp = [1] * n
+        for i in range(1, n):
+            res[i] = res[i-1] * a[i-1]
+        for i in range(n-2, -1, -1):
+            tmp[i] = tmp[i+1] * a[i+1]
+            res[i] *= tmp[i]
+        return res
+
+### 剑指 Offer 65. 不用加减乘除做加法
+## TODO 符号位是个是么概念，为什么转成无符号整形以后，移位还能和原来效果一样？
+## python 负数会出错
+class Solution:
+    def add(self, a: int, b: int) -> int:
+        while b:
+            ele_sum = a ^ b
+            carry = (a & b) << 1
+            a = ele_sum
+            b = carry
+        return a
+## c++
+# c++不支持负数的移位，需要加上转换为非负数后操作
+class Solution {
+public:
+    int add(int a, int b) {
+        while (b) {
+            int ele_sum = a ^ b;
+            int carry = (unsigned int)(a & b) << 1;
+            a = ele_sum;
+            b = carry;
+        }
+        return a;
+    }
+};
+
+
+### 剑指 Offer 62. 圆圈中最后剩下的数字
+# f(n) = (f(n-1) + m)%n
+class Solution:
+    def lastRemaining(self, n: int, m: int) -> int:
+        dp = [0] * (n+1)
+        # dp[1] = 0
+        for i in range(2, n+1):
+            dp[i] = (dp[i-1] + m)%i
+        return dp[n]

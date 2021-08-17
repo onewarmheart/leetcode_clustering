@@ -178,3 +178,80 @@ class Solution:
                 nums[i] = cp[l]
                 l -= 1 
         return
+
+
+##########堆排序问题集合
+## 建堆 O(n) n为堆大小
+# 从1开始编号，左子结点2*i，右子结点2*i+1，倒数第一个节点是n/2
+#%%
+def buildMaxHeap(nums):
+    n = len(nums)
+    def left(x):
+        return 2*x
+    def right(x):
+        return 2*x+1
+    def maxHeapify(nums, i):
+        n = len(nums)
+        largest = i
+        if left(i) < n and nums[left(i)] > nums[i]:
+            largest = left(i)
+        if right(i) < n and nums[right[i]] > nums[largest]:
+            largest = right(i)
+        
+        if largest != i:
+            nums[largest], nums[i] = nums[i], nums[largest]
+            maxHeapify(nums, largest)
+        return
+
+    for i in range(n//2, 0, -1):
+        maxHeapify(nums, i)
+nums = [4, 1, 3, 2, 16, 9, 10, 14, 8, 7]
+buildMaxHeap(nums)
+print(buildMaxHeap)
+res = [16, 14, 10, 8, 7, 9, 3, 2, 4, 1]
+
+## 以下两个建堆操作都是O(log(n))，完全二叉树的树高，因为都只需要滑滑梯一次
+## 删除节点
+def extract(nums):
+    n = len(nums)
+    mx = nums[1]
+    nums[1] = nums[-1]
+    nums.pop()
+    maxHeapify(nums, 1)
+    return mx
+## 添加节点
+def insert(nums, key):
+    nums.append(key)
+    n = len(nums)
+    i = n
+    while i > 1 and nums[i] > nums[i//2]:
+        nums[i//2], nums[i] = nums[i], nums[i//2]
+        i = i//2
+    return 
+
+### 75. 颜色分类
+## 双指针，O(n) 一趟遍历， 空间O(1)
+# p0和p1分别表示已排序的0后的第一个数，p1表示已排序后1的第一个数
+class Solution:
+    def sortColors(self, nums: List[int]) -> None:
+        n = len(nums)
+        p0 = p1 = 0
+        for i in range(n):
+            if nums[i] == 0:
+                nums[i], nums[p0] = nums[p0], nums[i]
+                if p0 < p1:
+                    nums[i], nums[p1] = nums[p1], nums[i]
+                p1 += 1
+                p0 += 1
+            elif nums[i] == 1:
+                nums[i], nums[p1] = nums[p1], nums[i]
+                p1 += 1
+        return
+
+## 两趟的话，完全可以用字典了
+# 0, 1, 2用vec，否则就用有序字典，或者真实的key存一个对应的数组
+
+
+
+
+

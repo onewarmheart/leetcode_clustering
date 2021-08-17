@@ -20,6 +20,66 @@ class Solution:
                 root = root.right
         return res
 
+## 144. 二叉树的前序遍历
+class Solution:
+    def preorderTraversal(self, root: TreeNode) -> List[int]:
+        res = list()
+        if not root:
+            return res
+        
+        stack = []
+        node = root
+        while stack or node:
+            while node:
+                res.append(node.val)
+                stack.append(node)
+                node = node.left
+            node = stack.pop()
+            node = node.right
+        return res
+
+作者：LeetCode-Solution
+链接：https://leetcode-cn.com/problems/binary-tree-preorder-traversal/solution/er-cha-shu-de-qian-xu-bian-li-by-leetcode-solution/
+来源：力扣（LeetCode）
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+
+## 94. 二叉树的中序遍历
+class Solution:
+    def inorderTraversal(self, root: TreeNode) -> List[int]:
+        res = list()
+        if not root:
+            return res
+        
+        stack = []
+        node = root
+        while stack or node:
+            while node:
+                res.append(node.val)
+                stack.append(node)
+                node = node.left
+            node = stack.pop()
+            node = node.right
+        return res
+        
+class Solution {
+public:
+    vector<int> inorderTraversal(TreeNode* root) {
+        vector<int> res;
+        stack<TreeNode*> stk;
+        while (root != nullptr || !stk.empty()) {
+            while (root != nullptr) {
+                stk.push(root);
+                root = root->left;
+            }
+            root = stk.top();
+            stk.pop();
+            res.push_back(root->val);
+            root = root->right;
+        }
+        return res;
+    }
+};
+
 ### 173. 二叉搜索树迭代器
 ## 扁平化解法
 class BSTIterator:

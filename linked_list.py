@@ -37,3 +37,29 @@ class Solution:
         else:
             return between
         return head
+
+### 23. 合并K个升序链表
+## 优先队列
+# 作者：powcai
+# 链接：https://leetcode-cn.com/problems/merge-k-sorted-lists/solution/leetcode-23-he-bing-kge-pai-xu-lian-biao-by-powcai/
+# 来源：力扣（LeetCode）
+# 著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+class Solution:
+    def mergeKLists(self, lists: List[ListNode]) -> ListNode:
+        import heapq
+        dummy = ListNode(0)
+        p = dummy
+        head = []
+        for i in range(len(lists)):
+            if lists[i] :
+                heapq.heappush(head, (lists[i].val, i))
+                lists[i] = lists[i].next
+        while head:
+            val, idx = heapq.heappop(head)
+            p.next = ListNode(val)
+            p = p.next
+            if lists[idx]:
+                heapq.heappush(head, (lists[idx].val, idx))
+                lists[idx] = lists[idx].next
+        return dummy.next
+

@@ -60,15 +60,24 @@ class Solution:
             if resi: return False
             n = t
         return True
-## 某质数的幂的除数，只能是质数的幂（更低阶）
+## 3是质数，某质数的幂的除数，只能是质数的幂（更低阶）
 class Solution:
     def isPowerOfThree(self, n: int) -> bool:
         return n > 0 and 1162261467 % n == 0
 
+
 ### 4的幂
+## 一定是2的幂（二进制上只有一个1），而且出现在奇数位置（后面是偶数）
 class Solution:
     def isPowerOfFour(self, n: int) -> bool:
         return n > 0 and (n & (n-1) == 0) and (n & 0xaaaaaaaa  == 0)
+
+##不用16进制
+class Solution:
+    def isPowerOfFour(self, n: int) -> bool:
+        tmp = int('10101010101010101010101010101010', 2)
+        return n > 0 and (n & (n - 1)) == 0 and (n & tmp) == 0
+        
 
 ### 最大公约数
 ## TODO
@@ -118,3 +127,17 @@ class Solution:
 
 ### 400. 第 N 位数字
 # https://www.cnblogs.com/grandyang/p/5891871.html
+class Solution:
+    def findNthDigit(self, n: int) -> int:
+        digit = 1
+        start = 1
+        while n - 9 * digit * start > 0:
+            n -= 9 * digit * start
+            digit += 1
+            start *= 10
+        # print(n, digit, start)
+        num = start + ceil(n/digit) - 1
+        num = str(num)
+        return ord(num[(n % digit) - 1]) - ord('0')
+
+

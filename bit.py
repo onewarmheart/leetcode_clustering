@@ -67,3 +67,27 @@ class Solution:
 
 
 
+#%%
+### 338. 比特位计数
+## 动态规划
+# 数字n的一比特数，分情况，偶数就等于2//n的，奇数要+1，比如bits[1] = bits[0] + 1
+class Solution:
+    def countBits(self, n: int) -> List[int]:
+        bits = [0]
+        for i in range(1, n + 1):
+            bits.append(bits[i >> 1] + (i & 1))
+        return bits
+
+
+
+### 461. 汉明距离
+## Brian Kernighan 算法，相比于移位法快，只遍历1
+## 时间复杂度：O(logC)，其中 C 是元素的数据范围，在本题中 log C=log 2^{31} = 31
+class Solution:
+    def hammingDistance(self, x: int, y: int) -> int:
+        tmp = x ^ y
+        res = 0
+        while tmp > 0:
+            tmp = tmp & (tmp -1)
+            res += 1
+        return res

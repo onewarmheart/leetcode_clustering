@@ -146,7 +146,7 @@ class Solution(object):
         
         treeNodes = [[] for _ in xrange(n)]
         treeHeights = [0 for _ in xrange(n)]
-        minHeights = sys.maxint
+        minHeights = sys.maxsize
         visited = {}
         
         for x, y in edges:

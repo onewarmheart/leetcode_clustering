@@ -274,6 +274,7 @@ class Solution(object):
 
 #%%
 ### 229. 求众数 II
+## 摩尔投票法
 ## 当且仅当第三个候选人出现的时候，才进行票数抵消，否则都只是计票
 class Solution:
     def majorityElement(self, nums: List[int]) -> List[int]:
@@ -503,4 +504,41 @@ class Solution:
         l = [int(i) for i in l]
         return l
 
+# TODO
+### 406. 根据身高重建队列
+## 自定义排序（身高从大到小，位置小的优先）+插入
 
+
+### 315. 计算右侧小于当前元素的个数
+## 离散化树状数组、前缀和
+## https://leetcode-cn.com/problems/count-of-smaller-numbers-after-self/solution/ji-suan-you-ce-xiao-yu-dang-qian-yuan-su-de-ge-s-7/
+
+
+
+### 448. 找到所有数组中消失的数字
+## 利用数组本身作为哈希表，加上一个大于n的数--编码，取余还原--解码
+
+
+### 581. 最短无序连续子数组
+## 排序 o(nlogn)
+
+## 找待排序子数组
+## 这个算法背后的思想是无序子数组中最小元素的正确位置可以决定左边界，最大元素的正确位置可以决定右边界。
+class Solution:
+    def findUnsortedSubarray(self, nums: List[int]) -> int:
+        n = len(nums)
+        maxn, right = float("-inf"), -1
+        minn, left = float("inf"), -1
+
+        for i in range(n):
+            if maxn > nums[i]:
+                right = i
+            else:
+                maxn = nums[i]
+            
+            if minn < nums[n - i - 1]:
+                left = n - i - 1
+            else:
+                minn = nums[n - i - 1]
+        
+        return 0 if right == -1 else right - left + 1

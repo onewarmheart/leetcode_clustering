@@ -113,8 +113,155 @@ class Solution:
 
 
 
+### 378. 有序矩阵中第 K 小的元素
+## TODO 怎么保证求出来的数在其中？
+class Solution:
+    def kthSmallest(self, matrix: List[List[int]], k: int) -> int:
+        res = 0
+        m = len(matrix)
+        n = len(matrix[0])
+        mn = matrix[0][0]
+        mx = matrix[m-1][n-1]
+        while True:
+            i = 0; j = n - 1
+            cnt = 0
+            mid = (mn + mx)//2
+            while 0 <= i < m and 0 <= j < n:
+                if matrix[i][j] <= mid:
+                    cnt += j+1
+                    i += 1
+                elif matrix[i][j] > mid:
+                    j -= 1
+            if cnt > k:
+                mx = mid - 1
+            elif cnt < k:
+                mn = mid + 1
+            else:
+                res = mid
+                break
+        return res
+
+## 刘冲改了一版，72 / 85通过，但还是有点问题
+# 锯齿形切割，本质上是类似于排序数组中双指针的方式，利用单调特性，跳过一些无需遍历的东西
+# 这样cnt得到的是包括第k小在内的，小于等于它的数，那排在前面的就是k-1，满足题意
+class Solution:
+    def kthSmallest(self, matrix: List[List[int]], k: int) -> int:
+        res = 0
+        m = len(matrix)
+        n = len(matrix[0])
+        mn = matrix[0][0]
+        mx = matrix[m-1][n-1]
+        while mn <= mx:
+            i, j = m - 1, 0
+            cnt = 0
+            mid = (mn + mx)//2
+            is_in = False
+            while 0 <= i and j < n:
+                if matrix[i][j] == mid:
+                    is_in = True
+                    cnt += i + 1
+                    i -= 1
+                    j += 1
+                elif matrix[i][j] > mid:
+                    i -= 1
+                else:
+                    cnt += i + 1
+                    j += 1
+            # print(cnt, mid)
+            if cnt > k:
+                mx = mid - 1
+            elif cnt < k:
+                mn = mid + 1
+            elif cnt == k:
+                if is_in:
+                    return mid
+                else:
+                    mx = mid - 1
+        return -1
+## https://leetcode-cn.com/problems/kth-smallest-element-in-a-sorted-matrix/solution/you-xu-ju-zhen-zhong-di-kxiao-de-yuan-su-by-leetco/
+class Solution:
+    def kthSmallest(self, matrix: List[List[int]], k: int) -> int:
+        n = len(matrix)
+
+        def check(mid):
+            i, j = n - 1, 0
+            num = 0
+            while i >= 0 and j < n:
+                if matrix[i][j] <= mid:
+                    num += i + 1
+                    j += 1
+                else:
+                    i -= 1
+            return num >= k
+
+        left, right = matrix[0][0], matrix[-1][-1]
+        while left < right:
+            mid = (left + right) // 2
+            if check(mid):
+                right = mid
+            else:
+                left = mid + 1
+        
+        return left
+
+
+##########二分查找消除边界疑惑
+### 34. 在排序数组中查找元素的第一个和最后一个位置
+
+
+## c++的内置函数
+lower_bound(): 指向首个不小于 value 的元素的迭代器，或若找不到这种元素则为 last
+upper_bound(): 指向首个大于 value 的元素的迭代器，或若找不到这种元素则为 last
+https://leetcode-cn.com/problems/find-first-and-last-position-of-element-in-sorted-array/solution/shi-yong-lower_bound-he-upper_bound-han-shu-by-ste/
 
 
 
+int lower_bound(vector<int>& nums, int target)
+{
+    int low = 0, high = nums.size();
+    while(low < high)
+    {
+        int mid = low + (high - low >> 1);
+        if(nums[mid] < target)
+            low = mid + 1;
+        else
+            high = mid;
+    }
+    return low;
+}
 
+int upper_bound(vector<int>& nums, int target)
+{
+    int low = 0, high = nums.size();
+    while(low < high)
+    {
+        int mid = low + (high - low >> 1);
+        if(nums[mid] <= target) //其实就一个等号的区别
+            low = mid + 1;
+        else
+            high = mid;
+    }
+    return low;
+}
 
+### 33. 搜索旋转排序数组
+class Solution {
+public:
+    int search(vector<int>& nums, int target) {
+        int n = nums.size();
+        int left = 0, right = n - 1;
+        while(left <= right){
+            int mid = left + (right - left) / 2;
+            if(nums[mid] == target) return mid;
+            if(nums[mid] >= nums[left]){ // =
+                if(target >= nums[left] && target <= nums[mid]) right = mid - 1;
+                else left = mid + 1;
+            }
+            else{
+                if(target >= nums[mid] && target <= nums[right]) left = mid + 1;
+                else right = mid - 1;                
+            }
+        }
+        return -1;
+    }
+};

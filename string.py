@@ -1,10 +1,10 @@
 ###6. Z 字形变换
-
+##TODO
 
 
 
 ###58. 最后一个单词的长度
-
+##TODO
 
 #%%
 ### 71. 简化路径
@@ -223,3 +223,56 @@ class Solution:
         return res
 ## 枚举+双指针
 # https://leetcode-cn.com/problems/longest-substring-with-at-least-k-repeating-characters/solution/xiang-jie-mei-ju-shuang-zhi-zhen-jie-fa-50ri1/
+
+### 415. 字符串相加
+## 反转对齐个位
+class Solution:
+    def addStrings(self, num1: str, num2: str) -> str:
+        num1 = list(reversed(num1))
+        num2 = list(reversed(num2))
+        n1 = len(num1)
+        n2 = len(num2)
+        res = []
+        carry = 0
+        i = 0
+        while i < n1 or i < n2 or carry > 0:
+            add_1 = ord(num1[i]) - ord('0') if i < n1 else 0
+            add_2 = ord(num2[i]) - ord('0') if i < n2 else 0
+            ele_sum = add_1 + add_2 + carry
+            carry = ele_sum // 10
+            res.append(ele_sum % 10)
+            i+=1
+        res = res[::-1]
+        res = [str(x) for x in res]
+        return "".join(res)
+
+
+### 32. 最长有效括号
+# dp[i]表示以第i个字符结尾的最长有效括号数
+class Solution {
+public:
+    int longestValidParentheses(string s) {
+        int n = s.size();
+        if(n==0) return 0;
+        vector<int> dp(n, 0);
+        //dp[0] = 0;
+        int res = 0;
+        for(int i = 1; i < n; i++){
+            if(s[i] == '(') dp[i] = 0;
+            else{
+                int j = i - dp[i-1] - 1;
+                if(j < 0 || s[j] == ')'){
+                    dp[i] = 0;
+                }
+                else{
+                    if(j-1>=0)
+                        dp[i] = dp[j-1] + dp[i-1] + 2;
+                    else
+                        dp[i] = dp[i-1] + 2;
+                }
+            }
+            res = max(res, dp[i]);
+        }
+        return res;
+    }
+};
